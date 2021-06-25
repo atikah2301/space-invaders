@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # initialise new pygame
 pygame.init()
@@ -17,14 +18,31 @@ pygame.display.set_icon(game_icon)
 player_img = pygame.image.load("witch_pusheen_transparent.png")
 player_w = 200
 player_h = 200
-player_x = display_w/2 - 90
-player_y = display_h/2
+player_x = display_w / 2 - player_w / 2
+player_y = display_h / 2
 playerX_change = 0
 playerY_change = 0
 player_speed = 0.5
 
+
 def player(x, y):
     game_display.blit(player_img, (x, y))
+
+
+# enemy
+enemy_img = pygame.image.load("octopus.png")
+enemy_w = 64
+enemy_h = 64
+enemy_x = random.randint(0, display_w - enemy_w)
+enemy_y = 20
+enemy_speed = 0.2
+enemyX_change = enemy_speed
+enemyY_change = 20
+
+
+def enemy(x, y):
+    game_display.blit(enemy_img, (x, y))
+
 
 # create a game loop for runtime functionality
 is_running = True
@@ -76,7 +94,22 @@ while is_running:
     if player_y >= display_h - player_h:
         player_y = display_h - player_h
 
-    # redraw player in new position
+    # enemy horizontal movement
+    enemy_x += enemyX_change
+
+    # prevent enemy from moving off screen by redirecting him
+    # enemy moves downwards upon hitting boundary
+    if enemy_x <= 0:
+        enemyX_change = enemy_speed
+        enemy_y += enemyY_change
+    if enemy_x >= display_w - enemy_w:
+        enemyX_change = -enemy_speed
+        enemy_y += enemyY_change
+
+    # draw player in new position
     player(player_x, player_y)
+
+    # draw enemy in new position
+    enemy(enemy_x, enemy_y)
 
     pygame.display.update()
