@@ -9,6 +9,9 @@ display_w = 800
 display_h = 600
 game_display = pygame.display.set_mode((display_w, display_h))
 
+# create background
+bg = pygame.image.load("space_bg.png")
+
 # setting title and icon
 pygame.display.set_caption("Space Invaders")
 game_icon = pygame.image.load("flower.png")
@@ -22,12 +25,16 @@ player_x = display_w / 2 - player_w / 2
 player_y = display_h / 2
 playerX_change = 0
 playerY_change = 0
-player_speed = 0.5
+player_speed = 1
 
 
 def player(x, y):
     game_display.blit(player_img, (x, y))
 
+
+# movement booleans
+go_right = False
+go_left = False
 
 # enemy
 enemy_img = pygame.image.load("octopus.png")
@@ -37,7 +44,7 @@ enemy_x = random.randint(0, display_w - enemy_w)
 enemy_y = 20
 enemy_speed = 0.2
 enemyX_change = enemy_speed
-enemyY_change = 20
+enemyY_change = 25
 
 
 def enemy(x, y):
@@ -50,6 +57,8 @@ while is_running:
 
     # create solid background colour using RGB values
     game_display.fill((224, 187, 228))
+    # create background
+    game_display.blit(bg, (0, 0))
 
     for event in pygame.event.get():
 
@@ -58,26 +67,25 @@ while is_running:
             is_running = False
 
         if event.type == pygame.KEYDOWN:
-
             # moving along x axis
-            if event.key == pygame.K_LEFT:
-                playerX_change = -player_speed
             if event.key == pygame.K_RIGHT:
-                playerX_change = player_speed
-
-            # moving along y axis
-            if event.key == pygame.K_UP:
-                playerY_change = -player_speed
-            if event.key == pygame.K_DOWN:
-                playerY_change = player_speed
+                go_right = True
+            if event.key == pygame.K_LEFT:
+                go_left = True
 
         if event.type == pygame.KEYUP:
-
             # stop moving when arrow key is released
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                playerX_change = 0
-            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                playerY_change = 0
+            if event.key == pygame.K_RIGHT:
+                go_right = False
+            if event.key == pygame.K_LEFT:
+                go_left = False
+
+        if go_right:
+            playerX_change = player_speed
+        elif go_left:
+            playerX_change = -player_speed
+        else:
+            playerX_change = 0
 
     # update player position
     player_x += playerX_change
