@@ -17,21 +17,45 @@ pygame.display.set_icon(game_icon)
 player_img = pygame.image.load("witch_pusheen_transparent.png")
 player_x = display_w/2 - 90
 player_y = display_h/2
+playerX_change = 0
+playerY_change = 0
+player_speed = 0.5
 
-def player():
-    game_display.blit(player_img, (player_x, player_y))
+def player(x, y):
+    game_display.blit(player_img, (x, y))
 
 # create a game loop for runtime functionality
 is_running = True
 while is_running:
-    # quit game by closing window
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             is_running = False
+
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_LEFT:
+                playerX_change = -player_speed
+            if event.key == pygame.K_RIGHT:
+                playerX_change = player_speed
+
+            if event.key == pygame.K_UP:
+                playerY_change = -player_speed
+            if event.key == pygame.K_DOWN:
+                playerY_change = player_speed
+
+        if event.type == pygame.KEYUP:
+
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                playerX_change = 0
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                playerY_change = 0
 
     # create solid background colour using RGB values
     game_display.fill((224, 187, 228))
 
-    player()
+    player_x += playerX_change
+    player_y += playerY_change
+    player(player_x, player_y)
 
     pygame.display.update()
