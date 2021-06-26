@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+from pygame import mixer
 
 # initialise new pygame
 pygame.init()
@@ -12,6 +13,10 @@ game_display = pygame.display.set_mode((display_w, display_h))
 
 # create background
 bg = pygame.image.load("space_bg.png")
+
+# background music
+mixer.music.load("background.wav")
+mixer.music.play(-1)
 
 # setting title and icon
 pygame.display.set_caption("Space Invaders")
@@ -26,7 +31,7 @@ player_x = display_w / 2 - player_w / 2
 player_y = display_h - player_h - 50
 playerX_change = 0
 playerY_change = 0
-player_speed = 0.5
+player_speed = 0.75
 
 # movement booleans
 go_right = False
@@ -40,25 +45,35 @@ enemyX_change = []
 enemyY_change = []
 enemy_w = 64
 enemy_h = 64
-enemy_speed = 0.2
+enemy_xspeed = 0.3
+enemy_yspeed = 75
 enemy_count = 6
 
 for i in range(enemy_count):
     enemy_img.append(pygame.image.load("ufo.png"))
     enemy_x.append(random.randint(0, display_w - enemy_w))
-    enemy_y.append(20)
-    enemyX_change.append(enemy_speed)
-    enemyY_change.append(25)
+    enemy_y.append(70)
+    enemyX_change.append(enemy_xspeed)
+    enemyY_change.append(enemy_yspeed)
 
 # bullet
 bullet_img = pygame.image.load("bullet.png")
 bullet_x = 0
 bullet_y = 500  # display_h - player_y
+bullet_speed = 4
 bulletX_change = 0
-bulletY_change = 1.5
+bulletY_change = bullet_speed
 bullet_fired = False
 
+# score
 score = 0
+font = pygame.font.Font("batman_forever.ttf", 32)
+score_x = 10
+score_y = 10
+
+def show_score(x, y):
+    score_display = font.render(f"Points: {score}", True, (255, 255, 255))
+    game_display.blit(score_display, (x, y))
 
 def player(x, y):
     game_display.blit(player_img, (x, y))
@@ -111,6 +126,8 @@ while is_running:
             if event.key == pygame.K_SPACE:
                 # checking the bool prevents us from re-setting bullet
                 if bullet_fired is False:
+                    bullet_sound = mixer.Sound("laser.wav")
+                    bullet_sound.play()
                     # bullet_x allows bullet to have its own path
                     # instead of following the player's x value
                     bullet_x = player_x
@@ -151,20 +168,22 @@ while is_running:
         enemy_x[i] += enemyX_change[i]
         # enemy movement - redirection before moving off screen
         if enemy_x[i] <= 0:
-            enemyX_change[i] = enemy_speed
+            enemyX_change[i] = enemy_xspeed
             enemy_y[i] += enemyY_change[i]
         elif enemy_x[i] >= display_w - enemy_w:
-            enemyX_change[i] = -enemy_speed
+            enemyX_change[i] = -enemy_xspeed
             enemy_y[i] += enemyY_change[i]
 
         # reset bullet and enemy upon collision with enemy
         collision = isCollided(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
         if collision:
+            collision_sound = mixer.Sound("explosion.wav")
+            collision_sound.play()
             bullet_y = 500
             bullet_fired = False
             score += 1
             enemy_x[i] = random.randint(0, display_w - enemy_w)
-            enemy_y[i] = 20
+            enemy_y[i] = 50
 
         # draw enemy in new position
         enemy(enemy_x[i], enemy_y[i], i)
@@ -181,5 +200,6 @@ while is_running:
 
     # draw player in new position
     player(player_x, player_y)
+    show_score(score_x, score_y)
 
     pygame.display.update()
