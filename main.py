@@ -67,12 +67,21 @@ bullet_fired = False
 
 # score
 score = 0
-font = pygame.font.Font("batman_forever.ttf", 32)
+score_font = pygame.font.Font("batman_forever.ttf", 32)
 score_x = 10
 score_y = 10
 
+# game over
+game_over_font = pygame.font.Font("batman_forever.ttf", 64)
+
+
+def game_over(x, y):
+    game_over_display = game_over_font.render("GAME OVER", True, (255, 255, 255))
+    game_display.blit(game_over_display, (x, y))
+
+
 def show_score(x, y):
-    score_display = font.render(f"Points: {score}", True, (255, 255, 255))
+    score_display = score_font.render(f"Points: {score}", True, (255, 255, 255))
     game_display.blit(score_display, (x, y))
 
 def player(x, y):
@@ -162,10 +171,19 @@ while is_running:
     if player_y >= display_h - player_h:
         player_y = display_h - player_h
 
-    # enemy movement
+    # enemy activity
     for i in range(enemy_count):
+
+        # game over
+        if enemy_y[i] > 150:
+            for j in range(enemy_count):
+                enemy_y[j] = 1000
+            game_over(display_w/2 - 235, display_h/2 - 60)
+            break
+
         # enemy movement - horizontal
         enemy_x[i] += enemyX_change[i]
+
         # enemy movement - redirection before moving off screen
         if enemy_x[i] <= 0:
             enemyX_change[i] = enemy_xspeed
