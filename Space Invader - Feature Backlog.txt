@@ -1,0 +1,35 @@
+Space Invaders - Feature Backlog
+
+Code refactoring:
+	Rewrite using OOP paradigm
+	Organise assets into folders
+
+Art & Design:
+	Create or find sprite animations for characters
+
+Game over:
+	Play again button upon game over	
+	Music stops after game over
+
+Progression and replayability:
+	Additional types enemies
+	Number of enemies increasing as time / score increases
+	Moving up to a harder level as time / score increases
+	In-game Power ups
+	Spaceship upgrades
+
+Player data tracking:
+	High scores
+	Collect prizes and achievements
+	Unlock new skins and backgrounds
+	Player stats (total games played, total enemies killed etc)
+	Secret boss
+
+Menu feature:
+	Level select
+	Game mode select
+	Volume settings
+	Display settings
+	Difficulty setting
+	Key Bindings
+
