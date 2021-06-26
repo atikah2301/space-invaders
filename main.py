@@ -27,11 +27,6 @@ playerX_change = 0
 playerY_change = 0
 player_speed = 0.5
 
-
-def player(x, y):
-    game_display.blit(player_img, (x, y))
-
-
 # movement booleans
 go_right = False
 go_left = False
@@ -46,9 +41,24 @@ enemy_speed = 0.2
 enemyX_change = enemy_speed
 enemyY_change = 25
 
+# bullet
+bullet_img = pygame.image.load("bullet.png")
+bullet_x = 0
+bullet_y = 500 #display_h - player_y
+bulletX_change = 0
+bulletY_change = 2
+bullet_fired = False
+
+def player(x, y):
+    game_display.blit(player_img, (x, y))
 
 def enemy(x, y):
     game_display.blit(enemy_img, (x, y))
+
+def fire_bullet(x, y):
+    global bullet_fired
+    bullet_fired = True
+    game_display.blit(bullet_img, (x + 16, y))
 
 
 # create a game loop for runtime functionality
@@ -72,6 +82,12 @@ while is_running:
                 go_right = True
             if event.key == pygame.K_LEFT:
                 go_left = True
+
+            # bullet
+            if event.key == pygame.K_SPACE:
+                if bullet_fired is False:
+                    bullet_x = player_x
+                    fire_bullet(player_x, bullet_y)
 
         if event.type == pygame.KEYUP:
             # stop moving when arrow key is released
@@ -113,6 +129,15 @@ while is_running:
     if enemy_x >= display_w - enemy_w:
         enemyX_change = -enemy_speed
         enemy_y += enemyY_change
+
+    # bullet motion
+    if bullet_y <= 5:
+        bullet_y = 500
+        bullet_fired = False
+
+    if bullet_fired:
+        fire_bullet(player_x, bullet_y)
+        bullet_y -= bulletY_change
 
     # draw player in new position
     player(player_x, player_y)
