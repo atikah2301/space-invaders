@@ -33,14 +33,22 @@ go_right = False
 go_left = False
 
 # enemy
-enemy_img = pygame.image.load("ufo.png")
+enemy_img = []
+enemy_x = []
+enemy_y = []
+enemyX_change = []
+enemyY_change = []
 enemy_w = 64
 enemy_h = 64
-enemy_x = random.randint(0, display_w - enemy_w)
-enemy_y = 20
 enemy_speed = 0.2
-enemyX_change = enemy_speed
-enemyY_change = 25
+enemy_count = 6
+
+for i in range(enemy_count):
+    enemy_img.append(pygame.image.load("ufo.png"))
+    enemy_x.append(random.randint(0, display_w - enemy_w))
+    enemy_y.append(20)
+    enemyX_change.append(enemy_speed)
+    enemyY_change.append(25)
 
 # bullet
 bullet_img = pygame.image.load("bullet.png")
@@ -56,8 +64,8 @@ def player(x, y):
     game_display.blit(player_img, (x, y))
 
 
-def enemy(x, y):
-    game_display.blit(enemy_img, (x, y))
+def enemy(x, y, i):
+    game_display.blit(enemy_img[i], (x, y))
 
 
 def fire_bullet(x, y):
@@ -137,17 +145,29 @@ while is_running:
     if player_y >= display_h - player_h:
         player_y = display_h - player_h
 
-    # enemy horizontal movement
-    enemy_x += enemyX_change
+    # enemy movement
+    for i in range(enemy_count):
+        # enemy movement - horizontal
+        enemy_x[i] += enemyX_change[i]
+        # enemy movement - redirection before moving off screen
+        if enemy_x[i] <= 0:
+            enemyX_change[i] = enemy_speed
+            enemy_y[i] += enemyY_change[i]
+        elif enemy_x[i] >= display_w - enemy_w:
+            enemyX_change[i] = -enemy_speed
+            enemy_y[i] += enemyY_change[i]
 
-    # prevent enemy from moving off screen by redirecting him
-    # enemy moves downwards upon hitting boundary
-    if enemy_x <= 0:
-        enemyX_change = enemy_speed
-        enemy_y += enemyY_change
-    if enemy_x >= display_w - enemy_w:
-        enemyX_change = -enemy_speed
-        enemy_y += enemyY_change
+        # reset bullet and enemy upon collision with enemy
+        collision = isCollided(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
+        if collision:
+            bullet_y = 500
+            bullet_fired = False
+            score += 1
+            enemy_x[i] = random.randint(0, display_w - enemy_w)
+            enemy_y[i] = 20
+
+        # draw enemy in new position
+        enemy(enemy_x[i], enemy_y[i], i)
 
     # reset bullet upon moving off screen
     if bullet_y <= 5:
@@ -159,19 +179,7 @@ while is_running:
         fire_bullet(bullet_x, bullet_y)
         bullet_y -= bulletY_change
 
-    # reset bullet and enemy upon collision with enemy
-    collision = isCollided(enemy_x, enemy_y, bullet_x, bullet_y)
-    if collision:
-        bullet_y = 500
-        bullet_fired = False
-        score += 1
-        enemy_x = random.randint(0, display_w - enemy_w)
-        enemy_y = 20
-
     # draw player in new position
     player(player_x, player_y)
-
-    # draw enemy in new position
-    enemy(enemy_x, enemy_y)
 
     pygame.display.update()
