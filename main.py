@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 # initialise new pygame
 pygame.init()
@@ -44,21 +45,36 @@ enemyY_change = 25
 # bullet
 bullet_img = pygame.image.load("bullet.png")
 bullet_x = 0
-bullet_y = 500 #display_h - player_y
+bullet_y = 500  # display_h - player_y
 bulletX_change = 0
 bulletY_change = 1.5
 bullet_fired = False
 
+score = 0
+
 def player(x, y):
     game_display.blit(player_img, (x, y))
 
+
 def enemy(x, y):
     game_display.blit(enemy_img, (x, y))
+
 
 def fire_bullet(x, y):
     global bullet_fired
     bullet_fired = True
     game_display.blit(bullet_img, (x + 16, y))
+
+
+def isCollided(enemy_x, enemy_y, bullet_x, bullet_y):
+    x_sq = math.pow(enemy_x - bullet_x, 2)
+    y_sq = math.pow(enemy_y - bullet_y, 2)
+    distance = math.sqrt(x_sq + y_sq)
+
+    if distance < 30:
+        return True
+    else:
+        return False
 
 
 # create a game loop for runtime functionality
@@ -133,7 +149,7 @@ while is_running:
         enemyX_change = -enemy_speed
         enemy_y += enemyY_change
 
-    # reset bullet to enable shooting multiple
+    # reset bullet upon moving off screen
     if bullet_y <= 5:
         bullet_y = 500
         bullet_fired = False
@@ -142,6 +158,15 @@ while is_running:
     if bullet_fired:
         fire_bullet(bullet_x, bullet_y)
         bullet_y -= bulletY_change
+
+    # reset bullet and enemy upon collision with enemy
+    collision = isCollided(enemy_x, enemy_y, bullet_x, bullet_y)
+    if collision:
+        bullet_y = 500
+        bullet_fired = False
+        score += 1
+        enemy_x = random.randint(0, display_w - enemy_w)
+        enemy_y = 20
 
     # draw player in new position
     player(player_x, player_y)
