@@ -14,18 +14,18 @@ bg = pygame.image.load("space_bg.png")
 
 # setting title and icon
 pygame.display.set_caption("Space Invaders")
-game_icon = pygame.image.load("flower.png")
+game_icon = pygame.image.load("spaceship.png")
 pygame.display.set_icon(game_icon)
 
 # player
-player_img = pygame.image.load("witch_pusheen_transparent.png")
-player_w = 200
-player_h = 200
+player_img = pygame.image.load("spaceship.png")
+player_w = 64
+player_h = 64
 player_x = display_w / 2 - player_w / 2
-player_y = display_h / 2
+player_y = display_h - player_h - 50
 playerX_change = 0
 playerY_change = 0
-player_speed = 1
+player_speed = 0.5
 
 
 def player(x, y):
@@ -37,7 +37,7 @@ go_right = False
 go_left = False
 
 # enemy
-enemy_img = pygame.image.load("octopus.png")
+enemy_img = pygame.image.load("ufo.png")
 enemy_w = 64
 enemy_h = 64
 enemy_x = random.randint(0, display_w - enemy_w)
