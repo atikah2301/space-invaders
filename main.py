@@ -46,7 +46,7 @@ bullet_img = pygame.image.load("bullet.png")
 bullet_x = 0
 bullet_y = 500 #display_h - player_y
 bulletX_change = 0
-bulletY_change = 2
+bulletY_change = 1.5
 bullet_fired = False
 
 def player(x, y):
@@ -85,9 +85,12 @@ while is_running:
 
             # bullet
             if event.key == pygame.K_SPACE:
+                # checking the bool prevents us from re-setting bullet
                 if bullet_fired is False:
+                    # bullet_x allows bullet to have its own path
+                    # instead of following the player's x value
                     bullet_x = player_x
-                    fire_bullet(player_x, bullet_y)
+                    fire_bullet(bullet_x, bullet_y)
 
         if event.type == pygame.KEYUP:
             # stop moving when arrow key is released
@@ -130,13 +133,14 @@ while is_running:
         enemyX_change = -enemy_speed
         enemy_y += enemyY_change
 
-    # bullet motion
+    # reset bullet to enable shooting multiple
     if bullet_y <= 5:
         bullet_y = 500
         bullet_fired = False
 
+    # bullet motion
     if bullet_fired:
-        fire_bullet(player_x, bullet_y)
+        fire_bullet(bullet_x, bullet_y)
         bullet_y -= bulletY_change
 
     # draw player in new position
